@@ -8,27 +8,31 @@ var POST='';
 var str='';
 var OUTPUT_URL = '<>/wav';
 
-// ����
 const lang = 'ja-JP';
 
 const speed = 100;
 
 const ip = '<google home ip address>';
 http.createServer(function (req, res) {
+    var body='';
     switch(req.url){
        case '/notify':
+        console.log('notify');
         if(req.method='POST'){
-            var body='';
+            //var body='';
             req.on('data', function (data) {
                 body +=data;
             });
             req.on('end',function(){
                
                POST =  qs.parse(body);
+               if(typeof POST['text']!=='undefined'){
+                makeAudio(POST);
+                say(ip, OUTPUT_URL);
+             }
                console.log(POST);
-             });
-             makeAudio(POST);
-             say(ip, OUTPUT_URL);
+            });
+             
              POST='';
              res.end();
         }   
@@ -37,7 +41,7 @@ http.createServer(function (req, res) {
         res.writeHead(200, {'content-type':'audio/wav'});
         fs.createReadStream('./test.wav').on('error', resError).pipe(res);
         res.end;
-        //console.log('音声にアクセスがありました');
+        console.log('音声にアクセスがありました');
         break;
        default:
         res.writeHead(404, {'content-type':'txt/plain'});
@@ -56,13 +60,13 @@ http.createServer(function (req, res) {
 
 
 
-async function makeAudio(POST) {
+function makeAudio(POST) {
     //const url = await get_TTS_URL(text, lang, speed);
     //console.log(`url=${url}`);
     //if (url == '') return;
 str=POST['text'];
-console.log(str);
-voice = new VoiceText('<YOUR API KEY>')
+console.log('makeAudio:'+str);
+voice = new VoiceText('<>')
 voice
 .speaker(voice.SPEAKER.HIKARI)
 .emotion(voice.EMOTION.HAPPINESS)
